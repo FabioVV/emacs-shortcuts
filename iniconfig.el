@@ -3,9 +3,9 @@
 (setq inhibit-splash-screen t)
 (setq ring-bell-function 'ignore)
 (desktop-save-mode 1) 
+(cua-mode 1) ;; for normal cut and paste shortcuts
 
-(custom-set-faces
- '(fringe ((t (:background "black")))))
+
 
 (defun rz-margins ()
   (when (eq (current-buffer) (get-buffer "*scratch*"))
@@ -59,6 +59,21 @@
   "Open the .emacs configuration file."
   (interactive)
   (find-file "~/.emacs"))  ;; Adjust the path if your config file is located elsewhere
+  
+(defun make-project (button)
+	"Creates an empty project folder on your home page"
+	(interactive)
+  (let ((folder-name (read-string "Enter folder name: "))
+        (documents-dir (expand-file-name (getenv "USERPROFILE") "Documents")))
+    (let ((new-folder (expand-file-name folder-name documents-dir)))
+      (make-directory new-folder t)  ;; Create the directory, if it doesn't exist
+      (dired new-folder))))           ;; Open the new folder in Dired
+
+(defun open-theme-chooser (button)
+  "Open the theme chooser."
+  (interactive)
+  (customize-themes))
+
 
 (defun c-startup-screen ()
   (with-current-buffer (get-buffer-create "*scratch*")
@@ -66,12 +81,12 @@
     (insert "\n\n")
     (insert
     "
-                   ██╗  ██╗███████╗██╗     ██╗      ██████╗ 
-                   ██║  ██║██╔════╝██║     ██║     ██╔═══██╗
-                   ███████║█████╗  ██║     ██║     ██║   ██║
-                   ██╔══██║██╔══╝  ██║     ██║     ██║   ██║
-                   ██║  ██║███████╗███████╗███████╗╚██████╔╝
-                   ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝ ╚═════╝ 
+		    ███████╗████████╗██╗   ██╗███████╗███████╗
+		    ██╔════╝╚══██╔══╝██║   ██║██╔════╝██╔════╝
+		    ███████╗   ██║   ██║   ██║█████╗  █████╗  
+		    ╚════██║   ██║   ██║   ██║██╔══╝  ██╔══╝  
+		    ███████║   ██║   ╚██████╔╝██║     ██║     
+		    ╚══════╝   ╚═╝    ╚═════╝ ╚═╝     ╚═╝     
 	\n")
 	
     (insert "================================================================================")
@@ -79,13 +94,14 @@
 
 	(create-centered-button "--- Reload last session ---" 'dk-read)
 	(create-centered-button "--- Open project ---" 'open-file-manager)
+	(create-centered-button "--- Create project ---" 'make-project)
+	
+	(create-centered-button "--- Open theme chooser ---" 'open-theme-chooser)
 	(create-centered-button "--- Open config ---" 'open-emacs-file)
 	(create-centered-button "--- Get to know me ---" 'my-homepage-button-action)
 	
 
 	(insert "================================================================================")
-
-	
 	(center-region (line-beginning-position) (line-end-position))
 	(insert "\n This is a simplistic configuration for emacs based on my taste\n")
 
@@ -95,9 +111,11 @@
 
 
 
-(keymap-global-set "C-e" 'shell-command)
-(global-set-key (kbd "C-s") 's-buffer)
-(global-set-key (kbd "C-M-e") 'mk-shell-below)
+(keymap-global-set "C-e" 'shell-command) ;; Executes one shell commands and displays the result
+(global-set-key (kbd "C-s") 's-buffer) ;; Saves the current buffer
+(global-set-key (kbd "C-M-e") 'mk-shell-below) ;; Opens the shell
+(global-set-key (kbd "C-f") 'isearch-forward) ;; Search string
+(global-set-key (kbd "C-p") 'find-file) ;; Jump to file
 
 (add-hook 'after-init-hook 'c-startup-screen)
 (add-hook 'after-init-hook #'rz-margins)
